@@ -5,10 +5,10 @@ const fs = require("fs"), vm = require("vm"), path = require("path");
 const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
 const code = html.match(/<script>([\s\S]*)<\/script>/)[1];
 
-const store = {}, files = {}; let shaN = 1;
+const store = {}, files = {}; let shaN = 1, lastEl = null;
 const mk = () => ({ innerHTML: "", style: {}, dataset: {}, value: "", classList: { toggle() {} }, remove() {}, appendChild() {}, isConnected: true, click() {}, textContent: "", disabled: false });
 const els = {};
-const doc = { hidden: false, body: { appendChild() {} }, addEventListener() {}, createElement: () => mk(),
+const doc = { hidden: false, body: { appendChild() {} }, addEventListener() {}, createElement: () => (lastEl = mk()),
   querySelector: s => (s === "#sheet" || s === "#drop") ? null : (els[s] || (els[s] = mk())) };
 const resp = (status, body, raw) => ({ ok: status >= 200 && status < 300, status, json: async () => body, text: async () => raw ?? JSON.stringify(body), arrayBuffer: async () => new ArrayBuffer(1) });
 
@@ -39,17 +39,25 @@ vm.runInContext(code + "\n;globalThis.__t={get entries(){return entries},get cfg
 const T = ctx.__t; let failed = 0;
 const A = (c, m) => { if (!c) { failed++; console.log("FAIL", m); } else console.log("ok  ", m); };
 const fill = v => { for (const k in v) els["#f_" + k] = { value: v[k] }; };
+const n = (s, re) => (s.match(re) || []).length;
 
 (async () => {
-  A(doc.querySelector("#app").innerHTML.includes("Connect your private"), "first run shows connect form");
+  const h0 = doc.querySelector("#app").innerHTML;
+  A(h0.includes("Connect your private"), "first run shows connect form");
+  A(n(h0, /<label>/g) === 3 && n(h0, /class="info"/g) === 3 && n(h0, /class="tip"/g) === 3, "connect form: every field has an info button and a tip");
   els["#fo"] = { value: "own" }; els["#fr"] = { value: "data" }; els["#ft"] = { value: "tok" }; els["#fc"] = mk();
   await T.connect(); await new Promise(r => setTimeout(r, 50));
   A(T.cfg && T.cfg.o === "own", "connect stores config");
   A(T.loaded && T.entries.length === 0 && T.stat.startsWith("Synced"), "empty repo (404 on pages/) syncs as empty");
   const v = { title: "Averaged down", date: "2026-11-09", instrument: "NQ", cost: "-3R", did: "Added lots ünïcode ✓", knew: "Limit 20", trigger: "Need", fix: "Stop" };
-  T.edit(); fill(v); els["#sv"] = mk(); await T.saveE();
+  T.edit();
+  const h1 = lastEl.innerHTML;
+  A(n(h1, /<label>/g) === 9 && n(h1, /class="info"/g) === 9 && n(h1, /class="tip"/g) === 9, "editor: all 9 fields have an info button and a tip");
+  A(n(h1, /onclick="tipToggle\(this\)"/g) === 9 && !/<label>[^<]*<button/.test(h1), "editor: info buttons call tipToggle and sit outside the label");
+  fill(v); els["#sv"] = mk(); await T.saveE();
   A(Object.keys(files).some(k => k.startsWith("pages/")), "new page written to repo");
   A(T.entries.length === 1 && T.entries[0].did.includes("ünïcode ✓"), "unicode survives round trip");
+  A(!Object.keys(T.entries[0]).some(k => k === "tip" || k === "info"), "stored page data unchanged by the tooltip feature");
   const id = T.entries[0].id;
   T.edit(id); fill({ ...v, title: "Edited" }); await T.saveE();
   A(T.entries.length === 1 && T.entries[0].title === "Edited", "edit overwrites using the stored sha");

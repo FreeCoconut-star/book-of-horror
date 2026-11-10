@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0 - 2026-11-10 - Info buttons on every field
+
+- Every form field (the connect/settings screen and all nine fields of the page editor) now has an "i" button next to its label. Tap or click it to open a short explanation of what the field is for; tap it again, tap elsewhere, press Esc or rotate/resize to close it. Only one explanation is open at a time.
+- Explanations are text only (no hover dependency, so they work on phones), escaped like all other inserted text, and do not touch the stored data model.
+- `tests/simulate.js`: 13 checks passing (4 new: every field has an info button and tip on the connect form and in the editor, buttons call the handler and sit outside the label, stored page data is unchanged).
+
 ## 1.0.0 - 2026-11-10 - First production release
 
 - Static single-file app on GitHub Pages: https://freecoconut-star.github.io/book-of-horror/

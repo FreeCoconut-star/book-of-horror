@@ -12,7 +12,7 @@
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 -apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:600;margin:0}
-.wrap{max-width:720px;margin:0 auto;padding:20px 18px 110px}
+.wrap{max-width:720px;margin:0 auto;padding:20px 18px 110px;position:relative}
 header{padding:18px 0 8px}h1{font-size:32px}
 .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .sub{color:var(--mu);font-size:15px;margin:6px 0 0;max-width:34em}
@@ -48,6 +48,11 @@ input:focus,textarea:focus{border-color:var(--ac)}textarea{min-height:92px;resiz
 .sec small{display:block;font:600 12px Georgia,serif;text-transform:uppercase;letter-spacing:1px;color:var(--ac);margin-bottom:4px}
 .sec.fix{border-left-color:var(--ok)}.sec.fix small{color:var(--ok)}.sec.info{border-left-color:var(--mu);white-space:normal;font-size:14px;color:var(--mu)}.sec.info small{color:var(--mu)}
 .evi{width:100%;border-radius:14px;border:1px solid var(--ln);margin:14px 0}
+.lb{display:flex;align-items:center;gap:4px;margin:22px 0 4px}.lb label{margin:0}
+.info{position:relative;flex:none;width:22px;height:22px;min-height:0;padding:0;border-radius:50%;font:italic 700 13px/1 Georgia,serif;color:var(--tx);background:var(--sf2)}
+.info::after{content:"";position:absolute;inset:-11px}
+.info[aria-expanded="true"]{background:var(--ac);border-color:var(--ac);color:#fff}
+.tip{display:none;position:absolute;left:18px;right:18px;z-index:4;background:var(--sf);border:1px solid var(--ac);border-radius:12px;padding:10px 14px;font-size:14px;line-height:1.5;color:var(--tx);box-shadow:0 8px 24px rgba(0,0,0,.18);scroll-margin-bottom:96px}.tip.on{display:block}
 </style>
 </head>
 <body>
@@ -62,11 +67,21 @@ const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch
 let cfg=ld("boh.cfg"),cache=ld("boh.cache")||{},entries=[],filter=null,stat="",statBad=false,syncing=false,loaded=false,cur=null,dirty=false,armed=null,rv=[],ri=0,toastT;
 const imgCache={};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const lab=(t,tip,st)=>`<div class="lb"${st?` style="${esc(st)}"`:""}><label>${esc(t)}</label><button type="button" class="info" aria-label="${esc("About "+t)}" aria-expanded="false" onclick="tipToggle(this)">i</button></div><div class="tip">${esc(tip)}</div>`;
 const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
 const fmt=s=>{const d=new Date(s+"T00:00:00");return isNaN(d)?s:d.toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})};
 const list=()=>filter?entries.filter(e=>(e.emo||[]).includes(filter)):entries;
 const msg=e=>e&&e.status===401?"Token rejected or expired – update it in Settings":e&&e.status===403?"GitHub refused (token permissions or rate limit)":e&&e.status===404?"Repository not found – check the name and token access":e instanceof TypeError?"Offline or blocked – check your connection":(e&&e.message)||"Unknown error";
 function toast(m){let t=$("#toast");if(!t){t=document.createElement("div");t.id="toast";t.style.cssText="position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:9;max-width:90vw;text-align:center";document.body.appendChild(t)}t.textContent=m;t.style.display="block";clearTimeout(toastT);toastT=setTimeout(()=>t.style.display="none",3200)}
+function tipShut(){document.querySelectorAll(".tip.on").forEach(t=>t.classList.remove("on"));document.querySelectorAll(".info[aria-expanded=true]").forEach(b=>b.setAttribute("aria-expanded","false"))}
+function tipToggle(b){
+  const t=b.parentNode.nextElementSibling,was=t.classList.contains("on");
+  tipShut();if(was)return;
+  const w=b.closest(".wrap");
+  t.style.top=(b.getBoundingClientRect().bottom-w.getBoundingClientRect().top+6)+"px";
+  t.classList.add("on");b.setAttribute("aria-expanded","true");
+  t.scrollIntoView({block:"nearest",behavior:"smooth"});
+}
 
 /* ---------- GitHub storage ---------- */
 async function gh(path,o={}){
@@ -121,9 +136,9 @@ async function prep(f){let m=1600,q=.85,b;do{b=await shrink(f,m,q);m*=.85;q=Math
 
 /* ---------- connect / settings ---------- */
 const cfgForm=first=>`<div class="sec info"><small>How this works</small>Your pages are saved as small files in your own <b>private</b> GitHub repository. This device needs a token to read and write them. The token stays in this browser and is only ever sent to api.github.com.</div>
-<label>Repository owner</label><input id="fo" value="${esc(cfg?cfg.o:DEF.o)}" autocapitalize="off" autocomplete="off">
-<label>Data repository (must be private)</label><input id="fr" value="${esc(cfg?cfg.r:DEF.r)}" autocapitalize="off" autocomplete="off">
-<label>Access token</label><p class="hint">${first?"":"Leave blank to keep the current token. "}Create one at GitHub → Settings → Developer settings → Fine-grained tokens. Repository access: only the data repository. Permission: Contents → Read and write.</p>
+${lab("Repository owner","The GitHub username (or organisation) that owns your data repository. For a personal account this is just your own username.")}<input id="fo" value="${esc(cfg?cfg.o:DEF.o)}" autocapitalize="off" autocomplete="off">
+${lab("Data repository (must be private)","The GitHub repository where your pages and charts are stored. The app refuses to connect if this repository is public, so your journal can never be exposed by accident.")}<input id="fr" value="${esc(cfg?cfg.r:DEF.r)}" autocapitalize="off" autocomplete="off">
+${lab("Access token","A password-like key that lets this browser read and write your data repository. It is stored only in this browser and is only ever sent to api.github.com. Use a fine-grained token limited to the data repository, with Contents set to Read and write.")}<p class="hint">${first?"":"Leave blank to keep the current token. "}Create one at GitHub → Settings → Developer settings → Fine-grained tokens. Repository access: only the data repository. Permission: Contents → Read and write.</p>
 <input id="ft" type="password" autocomplete="off" placeholder="github_pat_…">
 <div class="row" style="margin-top:18px"><button class="pri" id="fc" onclick="connect()">Connect</button></div>`;
 async function connect(){
@@ -217,20 +232,20 @@ function edit(id){
   const isNew=!f,s=document.createElement("div");s.className="sheet";s.id="sheet";
   s.innerHTML=`<div class="wrap"><button class="ghost" onclick="cancelE(${isNew?"null":`'${esc(cur.id)}'`})">← Cancel</button>
   <h2 style="font-size:26px;margin:14px 0 0">${isNew?"New page":"Edit page"}</h2>
-  <label>1 · Visual evidence</label><p class="hint">Use the completed-day chart showing your entries and exits.</p>
+  ${lab("1 · Visual evidence","A screenshot of the completed-day chart with your entries and exits marked, so you can see the mistake in the context of the whole day. It is shrunk automatically and saved as a JPEG in your private repository.")}<p class="hint">Use the completed-day chart showing your entries and exits.</p>
   <div class="drop" id="drop" onclick="$('#file').click()"></div>
   <input type="file" id="file" accept="image/*" hidden onchange="pick(this.files[0]);this.value=''">
   <button type="button" class="link" id="rm" onclick="cur.blob=null;cur.prev='';cur.rm=true;dirty=true;drawDrop()">Remove screenshot</button>
-  <div class="g2" style="margin-top:14px"><div><label style="margin-top:0">Title</label><input id="f_title" value="${esc(cur.title)}" placeholder="e.g. Averaged down on NQ"></div>
-  <div><label style="margin-top:0">Date</label><input id="f_date" type="date" value="${esc(cur.date)}"></div></div>
-  <div class="g2"><div><label>Instrument</label><input id="f_instrument" value="${esc(cur.instrument)}" placeholder="DAX, EURUSD…"></div>
-  <div><label>Cost</label><input id="f_cost" value="${esc(cur.cost)}" placeholder="-£450 / -3R"></div></div>
-  <label>2 · What I did</label><p class="hint">The action, plainly. No excuses.</p><textarea id="f_did" placeholder="Added 3 lots to a losing short…">${esc(cur.did)}</textarea>
-  <label>3 · What I knew</label><p class="hint">The rule I broke.</p><textarea id="f_knew" placeholder="My limit was 20 points. I ignored it.">${esc(cur.knew)}</textarea>
-  <label>4 · The gremlin</label><p class="hint">Which urge drove it?</p>
+  <div class="g2" style="margin-top:14px"><div>${lab("Title","A short name you will recognise later, for example Averaged down on NQ. It is the heading shown in the list of pages.","margin-top:0")}<input id="f_title" value="${esc(cur.title)}" placeholder="e.g. Averaged down on NQ"></div>
+  <div>${lab("Date","The day the trade happened, in your local time. Pages are listed newest first by this date.","margin-top:0")}<input id="f_date" type="date" value="${esc(cur.date)}"></div></div>
+  <div class="g2"><div>${lab("Instrument","What you were trading, for example DAX or EURUSD. It is shown next to the date when you read the page.")}<input id="f_instrument" value="${esc(cur.instrument)}" placeholder="DAX, EURUSD…"></div>
+  <div>${lab("Cost","What the mistake cost you, in money or in R, for example -£450 or -3R. It is free text, so the app does not add the figures up.")}<input id="f_cost" value="${esc(cur.cost)}" placeholder="-£450 / -3R"></div></div>
+  ${lab("2 · What I did","The action you took, described plainly and factually, with no excuses or explanations. Just what happened.")}<p class="hint">The action, plainly. No excuses.</p><textarea id="f_did" placeholder="Added 3 lots to a losing short…">${esc(cur.did)}</textarea>
+  ${lab("3 · What I knew","The rule, plan or limit you already had and broke. This separates a gap in knowledge from a lapse in discipline.")}<p class="hint">The rule I broke.</p><textarea id="f_knew" placeholder="My limit was 20 points. I ignored it.">${esc(cur.knew)}</textarea>
+  ${lab("4 · The gremlin","The emotional urge that drove the mistake. Tap one or more triggers, then describe in your own words what that urge wanted. The tags feed the top-trigger count and the filter on the home screen.")}<p class="hint">Which urge drove it?</p>
   <div class="chips">${TRIG.map(t=>`<button type="button" class="chip ${cur.emo.includes(t)?"on":""}" onclick="tog(this,'${t}')">${t}</button>`).join("")}</div>
   <textarea id="f_trigger" placeholder="What did the inner child want in that moment?">${esc(cur.trigger)}</textarea>
-  <label>5 · Correction</label><p class="hint">One rule I will follow next time.</p><textarea id="f_fix" placeholder="Close at the stop. No exceptions.">${esc(cur.fix)}</textarea></div>
+  ${lab("5 · Correction","One concrete rule to follow next time, worded so you can check whether you kept it. It appears as Next time when you read the page.")}<p class="hint">One rule I will follow next time.</p><textarea id="f_fix" placeholder="Close at the stop. No exceptions.">${esc(cur.fix)}</textarea></div>
   <div class="bar"><button class="pri" id="sv" onclick="saveE()">Save page</button></div>`;
   shut();document.body.appendChild(s);drawDrop();
 }
@@ -272,6 +287,9 @@ async function saveE(){
 /* ---------- wiring ---------- */
 function wire(){
   document.addEventListener("input",()=>{if($("#drop"))dirty=true});
+  document.addEventListener("click",e=>{if(!e.target.closest(".info,.tip"))tipShut()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")tipShut()});
+  window.addEventListener("resize",tipShut);
   document.addEventListener("paste",e=>{const f=[...(e.clipboardData&&e.clipboardData.files||[])].find(x=>x.type.startsWith("image/"));if(f&&cur&&$("#drop")){e.preventDefault();pick(f)}});
   document.addEventListener("dragover",e=>{if($("#drop"))e.preventDefault()});
   document.addEventListener("drop",e=>{const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if($("#drop")){e.preventDefault();if(f&&f.type.startsWith("image/"))pick(f)}});
