@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src https://api.github.com; base-uri 'none'; form-action 'none'">
+<title>Book of Horror</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📕</text></svg>">
+<style>
+:root{--bg:#f6f1ea;--sf:#fffdf9;--sf2:#efe8de;--tx:#2a2420;--mu:#7a6f64;--ln:#e2d9cc;--ac:#b3342b;--ac2:#8a2720;--ok:#3f7a5a;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#15120f;--sf:#1e1a16;--sf2:#27221c;--tx:#ece5db;--mu:#9a8f82;--ln:#332d26;--ac:#d4574d;--ac2:#b3433a;--ok:#6fb58f;color-scheme:dark}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 -apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:600;margin:0}
+.wrap{max-width:720px;margin:0 auto;padding:20px 18px 110px}
+header{padding:18px 0 8px}h1{font-size:32px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.sub{color:var(--mu);font-size:15px;margin:6px 0 0;max-width:34em}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0 8px}
+.stat{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:12px}
+.stat b{display:block;font:600 20px/1.2 Georgia,serif;overflow-wrap:anywhere}.stat span{font-size:12px;color:var(--mu)}
+.st{font-size:13px;color:var(--mu);margin:0 0 14px}.st.bad{color:var(--ac)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button{font:inherit;cursor:pointer;border:1px solid var(--ln);background:var(--sf);color:var(--tx);border-radius:12px;padding:11px 16px;min-height:44px}
+button:active{transform:scale(.98)}button:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.pri{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}.pri:hover{background:var(--ac2)}
+.ghost{background:transparent}.ico{padding:0;width:44px;font-size:18px}
+.link{background:none;border:0;color:var(--mu);text-decoration:underline;min-height:32px;padding:6px 0}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.chip{border-radius:999px;padding:7px 13px;min-height:36px;font-size:14px;background:var(--sf2);border-color:transparent;color:var(--mu)}.chip.on{background:var(--ac);color:#fff}
+.card{display:flex;gap:14px;background:var(--sf);border:1px solid var(--ln);border-radius:16px;padding:12px;margin:12px 0;cursor:pointer;text-align:left;width:100%}
+.card:hover{border-color:var(--ac)}
+.th{width:84px;height:84px;border-radius:10px;background:var(--sf2) center/cover;flex:none;display:grid;place-items:center;color:var(--mu);font-size:11px}
+.card h3{font-size:17px}.meta{font-size:13px;color:var(--mu)}.cost{color:var(--ac);font-weight:600}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.tag{font-size:12px;padding:2px 9px;border-radius:999px;background:var(--sf2);color:var(--mu)}
+.empty{text-align:center;padding:48px 12px;color:var(--mu)}.empty h2{color:var(--tx);margin-bottom:8px}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));box-shadow:0 8px 24px rgba(0,0,0,.25);border-radius:999px;padding:14px 22px}
+.sheet{position:fixed;inset:0;background:var(--bg);overflow:auto;z-index:5;padding-top:env(safe-area-inset-top,0px)}.sheet .wrap{padding-bottom:140px}
+label{display:block;font:600 13px Georgia,serif;text-transform:uppercase;letter-spacing:1px;color:var(--ac);margin:22px 0 4px}
+.hint{font-size:13px;color:var(--mu);margin:0 0 8px}
+input,textarea{width:100%;font:inherit;color:var(--tx);background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:12px;outline:none}
+input:focus,textarea:focus{border-color:var(--ac)}textarea{min-height:92px;resize:vertical}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.drop{border:2px dashed var(--ln);border-radius:14px;min-height:130px;display:grid;place-items:center;color:var(--mu);text-align:center;padding:12px;cursor:pointer;background:var(--sf)}.drop img{max-width:100%;border-radius:10px;display:block}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--ln);padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;justify-content:center}.bar>*{flex:1;max-width:340px}
+.sec{background:var(--sf);border:1px solid var(--ln);border-left:3px solid var(--ac);border-radius:12px;padding:14px 16px;margin:14px 0;white-space:pre-wrap}
+.sec small{display:block;font:600 12px Georgia,serif;text-transform:uppercase;letter-spacing:1px;color:var(--ac);margin-bottom:4px}
+.sec.fix{border-left-color:var(--ok)}.sec.fix small{color:var(--ok)}.sec.info{border-left-color:var(--mu);white-space:normal;font-size:14px;color:var(--mu)}.sec.info small{color:var(--mu)}
+.evi{width:100%;border-radius:14px;border:1px solid var(--ln);margin:14px 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const TRIG=["Impatience","Need to be right","Revenge","FOMO","Fear","Hope","Boredom","Greed"];
+const DEF={o:"FreeCoconut-star",r:"book-of-horror-data"},API="https://api.github.com";
+const ld=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}};
+let cfg=ld("boh.cfg"),cache=ld("boh.cache")||{},entries=[],filter=null,stat="",statBad=false,syncing=false,loaded=false,cur=null,dirty=false,armed=null,rv=[],ri=0,toastT;
+const imgCache={};
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const fmt=s=>{const d=new Date(s+"T00:00:00");return isNaN(d)?s:d.toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})};
+const list=()=>filter?entries.filter(e=>(e.emo||[]).includes(filter)):entries;
+const msg=e=>e&&e.status===401?"Token rejected or expired – update it in Settings":e&&e.status===403?"GitHub refused (token permissions or rate limit)":e&&e.status===404?"Repository not found – check the name and token access":e instanceof TypeError?"Offline or blocked – check your connection":(e&&e.message)||"Unknown error";
+function toast(m){let t=$("#toast");if(!t){t=document.createElement("div");t.id="toast";t.style.cssText="position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:9;max-width:90vw;text-align:center";document.body.appendChild(t)}t.textContent=m;t.style.display="block";clearTimeout(toastT);toastT=setTimeout(()=>t.style.display="none",3200)}
+
+/* ---------- GitHub storage ---------- */
+async function gh(path,o={}){
+  const h={Authorization:"Bearer "+cfg.t,Accept:o.raw?"application/vnd.github.raw+json":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"};
+  if(o.body)h["Content-Type"]="application/json";
+  const r=await fetch(API+"/repos/"+cfg.o+"/"+cfg.r+path,{method:o.method||"GET",headers:h,body:o.body,cache:"no-store"});
+  if(!r.ok){const e=new Error("GitHub "+r.status);e.status=r.status;throw e}
+  return r;
+}
+async function sha_(p){try{return (await (await gh("/contents/"+p)).json()).sha}catch(e){if(e.status===404)return undefined;throw e}}
+const u8b64=s=>{const b=new TextEncoder().encode(s);let x="";for(let i=0;i<b.length;i+=8192)x+=String.fromCharCode.apply(null,b.subarray(i,i+8192));return btoa(x)};
+const blob64=b=>new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(String(f.result).split(",")[1]);f.onerror=rej;f.readAsDataURL(b)});
+const blobURL=b=>new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(f.result);f.onerror=rej;f.readAsDataURL(b)});
+async function putRetry(p,c,m,sha){
+  for(let i=0;i<2;i++){
+    try{const b={message:m,content:c};if(sha)b.sha=sha;return (await (await gh("/contents/"+p,{method:"PUT",body:JSON.stringify(b)})).json()).content.sha}
+    catch(e){if(i||![409,422].includes(e.status))throw e;sha=await sha_(p)}
+  }
+}
+async function delFile(p,sha){sha=sha||await sha_(p);if(!sha)return;await gh("/contents/"+p,{method:"DELETE",body:JSON.stringify({message:"Delete "+p,sha})})}
+const persist=()=>{if(!sv("boh.cache",cache))toast("Browser storage is full – pages still sync to GitHub")};
+function rebuild(){entries=Object.entries(cache).map(([id,c])=>({...c.d,id})).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.ts||0)-(a.ts||0))}
+async function pull(){
+  let ls=[];
+  try{ls=await (await gh("/contents/pages")).json()}
+  catch(e){if(e.status!==404)throw e;await gh("")}
+  if(!Array.isArray(ls))ls=[];
+  ls=ls.filter(f=>f.type==="file"&&/^[\w-]+\.json$/.test(f.name));
+  const next={},need=[];
+  for(const f of ls){const id=f.name.slice(0,-5),c=cache[id];if(c&&c.sha===f.sha)next[id]=c;else need.push([id,f])}
+  for(let i=0;i<need.length;i+=8)await Promise.all(need.slice(i,i+8).map(async([id,f])=>{
+    try{const t=await (await gh("/contents/pages/"+f.name,{raw:1})).text();next[id]={sha:f.sha,d:JSON.parse(t)}}
+    catch(e){if(e.status===401||e.status===403||e instanceof TypeError)throw e}
+  }));
+  cache=next;persist();rebuild();
+}
+async function refresh(){
+  if(!cfg||syncing)return;syncing=true;stat="Syncing…";statBad=false;render();
+  try{await pull();stat="Synced "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}
+  catch(e){stat="⚠ "+msg(e);statBad=true}
+  syncing=false;loaded=true;render();
+}
+async function fullUrl(id){
+  if(imgCache[id])return imgCache[id];
+  const r=await gh("/contents/img/"+id+".jpg",{raw:1});
+  return imgCache[id]=URL.createObjectURL(new Blob([await r.arrayBuffer()],{type:"image/jpeg"}));
+}
+
+/* ---------- images ---------- */
+function shrink(file,m,q){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),i=new Image();i.onload=()=>{URL.revokeObjectURL(u);const r=Math.min(1,m/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(i.width*r));c.height=Math.max(1,Math.round(i.height*r));c.getContext("2d").drawImage(i,0,0,c.width,c.height);c.toBlob(b=>b?res(b):rej(new Error("encode failed")),"image/jpeg",q)};i.onerror=()=>rej(new Error("decode failed"));i.src=u})}
+async function prep(f){let m=1600,q=.85,b;do{b=await shrink(f,m,q);m*=.85;q=Math.max(.6,q-.05)}while(b.size>600000&&m>600);return b}
+
+/* ---------- connect / settings ---------- */
+const cfgForm=first=>`<div class="sec info"><small>How this works</small>Your pages are saved as small files in your own <b>private</b> GitHub repository. This device needs a token to read and write them. The token stays in this browser and is only ever sent to api.github.com.</div>
+<label>Repository owner</label><input id="fo" value="${esc(cfg?cfg.o:DEF.o)}" autocapitalize="off" autocomplete="off">
+<label>Data repository (must be private)</label><input id="fr" value="${esc(cfg?cfg.r:DEF.r)}" autocapitalize="off" autocomplete="off">
+<label>Access token</label><p class="hint">${first?"":"Leave blank to keep the current token. "}Create one at GitHub → Settings → Developer settings → Fine-grained tokens. Repository access: only the data repository. Permission: Contents → Read and write.</p>
+<input id="ft" type="password" autocomplete="off" placeholder="github_pat_…">
+<div class="row" style="margin-top:18px"><button class="pri" id="fc" onclick="connect()">Connect</button></div>`;
+async function connect(){
+  const o=$("#fo").value.trim(),r=$("#fr").value.trim(),t=$("#ft").value.trim()||(cfg&&cfg.t)||"";
+  if(!o||!r||!t)return toast("Fill in all three fields");
+  const b=$("#fc");b.disabled=true;b.textContent="Checking…";
+  try{
+    const res=await fetch(API+"/repos/"+encodeURIComponent(o)+"/"+encodeURIComponent(r),{headers:{Authorization:"Bearer "+t,Accept:"application/vnd.github+json"},cache:"no-store"});
+    if(res.status===401)throw new Error("GitHub rejected the token");
+    if(res.status===404)throw new Error("Repository not found, or the token has no access to it");
+    if(!res.ok)throw new Error("GitHub error "+res.status);
+    const j=await res.json();
+    if(j.private!==true)throw new Error("That repository is PUBLIC – your journal would be visible to everyone. Make it private first.");
+    if(j.permissions&&j.permissions.push===false)throw new Error("Token is read-only – it needs Contents: Read and write");
+    cfg={o,r,t};sv("boh.cfg",cfg);cache={};rebuild();loaded=false;dirty=false;shut();render();refresh();
+  }catch(e){b.disabled=false;b.textContent="Connect";toast(e instanceof TypeError?"Offline or blocked":e.message)}
+}
+function settings(){
+  const s=document.createElement("div");s.className="sheet";s.id="sheet";
+  s.innerHTML=`<div class="wrap"><button class="ghost" onclick="shut()">← Back</button><h2 style="font-size:26px;margin:14px 0 0">Settings</h2><p class="sub">Connected to ${esc(cfg.o)}/${esc(cfg.r)} · token ending …${esc(cfg.t.slice(-4))}</p>${cfgForm(false)}
+  <div style="margin-top:28px"><button class="ghost" onclick="disc(this)">Disconnect this browser</button><p class="hint">Removes the token and cached pages from this device. Your pages stay in GitHub.</p></div></div>`;
+  shut();document.body.appendChild(s);
+}
+function disc(b){
+  if(armed!=="dc"){armed="dc";b.textContent="Tap again to disconnect";setTimeout(()=>{if(armed==="dc"){armed=null;if(b.isConnected)b.textContent="Disconnect this browser"}},3000);return}
+  armed=null;try{localStorage.removeItem("boh.cfg");localStorage.removeItem("boh.cache")}catch(e){}
+  cfg=null;cache={};entries=[];loaded=false;stat="";shut();render();
+}
+
+/* ---------- home ---------- */
+const setF=t=>{filter=filter===t?null:t;render()};
+function render(){
+  if(!cfg){$("#app").innerHTML=`<div class="wrap"><header><h1>Book of Horror</h1><p class="sub">Connect your private journal repository to begin.</p></header>${cfgForm(true)}</div>`;return}
+  if(!loaded){$("#app").innerHTML=`<div class="wrap"><header><h1>Book of Horror</h1><p class="sub">Opening your book…</p></header></div>`;return}
+  if(filter&&!entries.some(e=>(e.emo||[]).includes(filter)))filter=null;
+  const l=list(),cnt={};entries.forEach(e=>(e.emo||[]).forEach(t=>cnt[t]=(cnt[t]||0)+1));
+  const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0],month=today().slice(0,7);
+  $("#app").innerHTML=`<div class="wrap">
+  <header><div class="top"><h1>Book of Horror</h1><div class="row"><button class="ico ghost" aria-label="Sync now" onclick="refresh()">⟳</button><button class="ico ghost" aria-label="Settings" onclick="settings()">⚙</button></div></div>
+  <p class="sub">Face the evidence. Spot the pattern. Become the observer, not the person who failed.</p></header>
+  <div class="stats">
+   <div class="stat"><b>${entries.length}</b><span>pages</span></div>
+   <div class="stat"><b>${entries.filter(e=>(e.date||"").startsWith(month)).length}</b><span>this month</span></div>
+   <div class="stat"><b>${top?esc(top[0]):"–"}</b><span>top trigger${top?" ("+top[1]+"×)":""}</span></div></div>
+  <p class="st ${statBad?"bad":""}">${esc(stat)}</p>
+  <div class="row"><button class="pri" onclick="review(0)" ${l.length?"":"disabled"}>Read the book</button></div>
+  ${entries.length?`<div class="chips">${Object.keys(cnt).map(t=>`<button class="chip ${filter===t?"on":""}" onclick="setF('${t}')">${esc(t)} · ${cnt[t]}</button>`).join("")}</div>`:""}
+  ${l.length?l.map((e,i)=>`<button class="card" onclick="review(${i})"><div class="th" style="${e.thumb?`background-image:url('${esc(e.thumb)}')`:""}">${e.thumb?"":"no chart"}</div>
+   <div><h3>${esc(e.title||e.instrument||"Untitled mistake")}</h3><div class="meta">${esc(fmt(e.date||""))} ${e.cost?`· <span class="cost">${esc(e.cost)}</span>`:""}</div>
+   <div class="tags">${(e.emo||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div></div></button>`).join("")
+   :`<div class="empty"><h2>The book is empty</h2><p>Your first page is the hardest. Add a trade you'd rather forget.</p></div>`}
+  </div><button class="pri fab" onclick="edit()">+ Add a page</button>`;
+}
+
+/* ---------- review ---------- */
+function review(i){rv=list();ri=i;showPage()}
+function showPage(){
+  const e=rv[ri];if(!e)return shut();
+  const s=document.createElement("div");s.className="sheet";s.id="sheet";
+  s.innerHTML=`<div class="wrap"><div class="row" style="justify-content:space-between"><button class="ghost" onclick="shut()">← Back</button><span class="meta">${ri+1} / ${rv.length}</span></div>
+  <h2 style="font-size:26px;margin-top:14px">${esc(e.title||e.instrument||"Untitled mistake")}</h2>
+  <div class="meta">${esc(fmt(e.date||""))} ${e.instrument?"· "+esc(e.instrument):""} ${e.cost?`· <span class="cost">${esc(e.cost)}</span>`:""}</div>
+  ${e.hasImg||e.thumb?`<img class="evi" id="evi" data-id="${esc(e.id)}" src="${esc(e.thumb||"")}" alt="Chart of the completed day">`:""}
+  ${e.did?`<div class="sec"><small>What I did</small>${esc(e.did)}</div>`:""}
+  ${e.knew?`<div class="sec"><small>What I knew</small>${esc(e.knew)}</div>`:""}
+  ${(e.emo||[]).length||e.trigger?`<div class="sec"><small>The gremlin</small>${(e.emo||[]).map(t=>`<span class="tag">${esc(t)}</span> `).join("")}<div style="margin-top:6px">${esc(e.trigger||"")}</div></div>`:""}
+  ${e.fix?`<div class="sec fix"><small>Next time</small>${esc(e.fix)}</div>`:""}
+  <div class="row" style="margin-top:20px"><button onclick="edit('${esc(e.id)}')">Edit</button><button class="ghost" onclick="del('${esc(e.id)}',this)">Delete</button></div></div>
+  <div class="bar"><button ${ri?"":"disabled"} onclick="go(-1)">← Newer</button><button class="pri" ${ri<rv.length-1?"":"disabled"} onclick="go(1)">Older →</button></div>`;
+  shut();document.body.appendChild(s);s.scrollTop=0;
+  if(e.hasImg)fullUrl(e.id).then(u=>{const el=$("#evi");if(el&&el.dataset.id===e.id)el.src=u}).catch(()=>{});
+}
+const go=d=>{ri+=d;showPage()};
+function shut(){const s=$("#sheet");if(s)s.remove()}
+async function del(id,b){
+  if(armed!==id){armed=id;b.textContent="Tap again to delete";setTimeout(()=>{if(armed===id){armed=null;if(b.isConnected)b.textContent="Delete"}},3000);return}
+  armed=null;b.disabled=true;
+  try{
+    const c=cache[id];
+    if(c&&c.d.hasImg)await delFile("img/"+id+".jpg");
+    await delFile("pages/"+id+".json",c&&c.sha);
+    delete cache[id];delete imgCache[id];persist();rebuild();shut();render();toast("Page deleted");
+  }catch(e){b.disabled=false;b.textContent="Delete";toast("Couldn't delete: "+msg(e))}
+}
+
+/* ---------- editor ---------- */
+function edit(id){
+  dirty=false;armed=null;
+  const f=id&&entries.find(e=>e.id===id);
+  cur=f?{...f,emo:[...(f.emo||[])],blob:null,rm:false,prev:""}:{id:"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),date:today(),emo:[],ts:Date.now(),hasImg:false,thumb:"",blob:null,rm:false,prev:""};
+  const isNew=!f,s=document.createElement("div");s.className="sheet";s.id="sheet";
+  s.innerHTML=`<div class="wrap"><button class="ghost" onclick="cancelE(${isNew?"null":`'${esc(cur.id)}'`})">← Cancel</button>
+  <h2 style="font-size:26px;margin:14px 0 0">${isNew?"New page":"Edit page"}</h2>
+  <label>1 · Visual evidence</label><p class="hint">Use the completed-day chart showing your entries and exits.</p>
+  <div class="drop" id="drop" onclick="$('#file').click()"></div>
+  <input type="file" id="file" accept="image/*" hidden onchange="pick(this.files[0]);this.value=''">
+  <button type="button" class="link" id="rm" onclick="cur.blob=null;cur.prev='';cur.rm=true;dirty=true;drawDrop()">Remove screenshot</button>
+  <div class="g2" style="margin-top:14px"><div><label style="margin-top:0">Title</label><input id="f_title" value="${esc(cur.title)}" placeholder="e.g. Averaged down on NQ"></div>
+  <div><label style="margin-top:0">Date</label><input id="f_date" type="date" value="${esc(cur.date)}"></div></div>
+  <div class="g2"><div><label>Instrument</label><input id="f_instrument" value="${esc(cur.instrument)}" placeholder="DAX, EURUSD…"></div>
+  <div><label>Cost</label><input id="f_cost" value="${esc(cur.cost)}" placeholder="-£450 / -3R"></div></div>
+  <label>2 · What I did</label><p class="hint">The action, plainly. No excuses.</p><textarea id="f_did" placeholder="Added 3 lots to a losing short…">${esc(cur.did)}</textarea>
+  <label>3 · What I knew</label><p class="hint">The rule I broke.</p><textarea id="f_knew" placeholder="My limit was 20 points. I ignored it.">${esc(cur.knew)}</textarea>
+  <label>4 · The gremlin</label><p class="hint">Which urge drove it?</p>
+  <div class="chips">${TRIG.map(t=>`<button type="button" class="chip ${cur.emo.includes(t)?"on":""}" onclick="tog(this,'${t}')">${t}</button>`).join("")}</div>
+  <textarea id="f_trigger" placeholder="What did the inner child want in that moment?">${esc(cur.trigger)}</textarea>
+  <label>5 · Correction</label><p class="hint">One rule I will follow next time.</p><textarea id="f_fix" placeholder="Close at the stop. No exceptions.">${esc(cur.fix)}</textarea></div>
+  <div class="bar"><button class="pri" id="sv" onclick="saveE()">Save page</button></div>`;
+  shut();document.body.appendChild(s);drawDrop();
+}
+function drawDrop(){
+  const d=$("#drop");if(!d)return;
+  const src=cur.prev||(cur.hasImg&&!cur.rm?(imgCache[cur.id]||cur.thumb):"");
+  d.innerHTML=src?`<img src="${esc(src)}" alt="">`:"Tap to add a screenshot, paste (Ctrl+V) or drop one here";
+  $("#rm").style.display=src?"":"none";
+}
+function tog(b,t){b.classList.toggle("on");dirty=true;cur.emo=cur.emo.includes(t)?cur.emo.filter(x=>x!==t):[...cur.emo,t]}
+async function pick(f){
+  if(!f||!cur)return;toast("Processing…");
+  try{cur.blob=await prep(f);cur.prev=URL.createObjectURL(cur.blob);cur.rm=false;dirty=true;drawDrop()}
+  catch(e){toast("Couldn't read that image")}
+}
+function cancelE(id){
+  if(dirty&&armed!=="cx"){armed="cx";toast("Unsaved changes – tap Cancel again to discard");return}
+  dirty=false;armed=null;
+  if(id){const k=list().findIndex(x=>x.id===id);if(k>=0)return review(k)}
+  shut();
+}
+async function saveE(){
+  ["title","date","instrument","cost","did","knew","trigger","fix"].forEach(k=>cur[k]=$("#f_"+k).value.trim());
+  const hasImg=cur.blob?true:(cur.rm?false:!!cur.hasImg);
+  if(!cur.did&&!cur.title&&!hasImg)return toast("Add at least a title, a note or a chart");
+  const b=$("#sv");b.disabled=true;b.textContent="Saving…";
+  try{
+    const id=cur.id,isNew=!cache[id];
+    if(cur.blob){cur.thumb=await blobURL(await shrink(cur.blob,320,.7));await putRetry("img/"+id+".jpg",await blob64(cur.blob),"Add chart "+id);imgCache[id]=cur.prev}
+    else if(cur.rm&&cur.hasImg){await delFile("img/"+id+".jpg");cur.thumb="";delete imgCache[id]}
+    const d={title:cur.title,date:cur.date,instrument:cur.instrument,cost:cur.cost,did:cur.did,knew:cur.knew,emo:cur.emo,trigger:cur.trigger,fix:cur.fix,ts:cur.ts,hasImg,thumb:hasImg?cur.thumb||"":""};
+    const sha=await putRetry("pages/"+id+".json",u8b64(JSON.stringify(d)),(isNew?"Add page ":"Update page ")+id,cache[id]&&cache[id].sha);
+    cache[id]={sha,d};persist();rebuild();dirty=false;
+    const k=list().findIndex(x=>x.id===id);toast("Page saved");
+    if(k>=0)review(k);else shut();render();
+  }catch(e){b.disabled=false;b.textContent="Save page";toast("Couldn't save: "+msg(e))}
+}
+
+/* ---------- wiring ---------- */
+function wire(){
+  document.addEventListener("input",()=>{if($("#drop"))dirty=true});
+  document.addEventListener("paste",e=>{const f=[...(e.clipboardData&&e.clipboardData.files||[])].find(x=>x.type.startsWith("image/"));if(f&&cur&&$("#drop")){e.preventDefault();pick(f)}});
+  document.addEventListener("dragover",e=>{if($("#drop"))e.preventDefault()});
+  document.addEventListener("drop",e=>{const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if($("#drop")){e.preventDefault();if(f&&f.type.startsWith("image/"))pick(f)}});
+  document.addEventListener("keydown",e=>{if(!$("#sheet")||$("#drop")||/INPUT|TEXTAREA/.test(e.target.tagName))return;if(e.key==="ArrowRight"&&ri<rv.length-1)go(1);if(e.key==="ArrowLeft"&&ri>0)go(-1);if(e.key==="Escape")shut()});
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden&&cfg&&!$("#drop")&&!dirty)refresh()});
+  window.addEventListener("online",()=>{if(cfg&&!$("#drop"))refresh()});
+  window.addEventListener("beforeunload",e=>{if(dirty&&$("#drop")){e.preventDefault();e.returnValue=""}});
+}
+wire();
+if(cfg&&Object.keys(cache).length){rebuild();loaded=true}
+render();
+if(cfg)refresh();
+</script>
+</body>
+</html>
